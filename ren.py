@@ -1,4 +1,3 @@
-
 from enum import Enum, auto
 from os.path import getmtime, getsize, splitext
 import glob
