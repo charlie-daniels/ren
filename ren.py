@@ -32,9 +32,8 @@ def get_sorting_method() -> SortingMethod:
 
     return SortingMethod(int(input()))
 
-def handle_sort(target_directory: str, selected_sort: SortingMethod) -> list[str]: 
-    '''Applies the selected SortingMethod to the files in a directory.'''
-    file_type = '*.*'
+def handle_sort(target_directory: str, selected_sort: SortingMethod, file_type: str='*.*') -> list[str]: 
+    '''Applies the selected SortingMethod to the selected file type in a directory.'''
     file_list = glob.glob(target_directory + file_type)
 
     if selected_sort == SortingMethod.ALPHABETICAL:
@@ -49,15 +48,18 @@ def rename_file_list(target_directory: str, sorted_files: list[str], bulk_name: 
     renamed_files = []
     for file_index, current_file in enumerate(sorted_files):
         _path, file_ext = splitext(current_file)
-        new_file_name = f'{target_directory}{str(file_index).zfill(len(str(len(sorted_files))))}{bulk_name}{file_ext}'
+        # Add zero placeholders of length of list
+        file_index_zfill = str(file_index).zfill(len(str(len(sorted_files))))       
+        new_file_name = f'{target_directory}{file_index_zfill}{bulk_name}{file_ext}'
         renamed_files.append(new_file_name)
-        
     return renamed_files
 
-def apply_rename(renamed_files: list[str], original_files: list[str]) -> None:
+def apply_rename(original_files: list[str], renamed_files: list[str]) -> None:
+    '''Renames the file at the first path '''
     for index, original in enumerate(original_files):
-        current = renamed_files[index]
-        rename(original, current)
+        renamed = renamed_files[index]
+        rename(original, renamed)
+    return 
 
 def main():
     print_welcome_screen()
@@ -65,12 +67,12 @@ def main():
     target_directory = get_target_directory()
     selected_sort = get_sorting_method()
 
-    sorted_files = handle_sort(target_directory,selected_sort)
+    sorted_files = handle_sort(target_directory, selected_sort)
 
     print('\nEnter name for all files: ', end='')
     bulk_name = input()
     renamed_files = rename_file_list(target_directory, sorted_files, bulk_name)
-    apply_rename(renamed_files, sorted_files)
+    apply_rename(sorted_files, renamed_files)
     print('Files renamed.')
 
 if __name__ == '__main__':
