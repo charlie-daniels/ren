@@ -13,10 +13,8 @@ def print_welcome_screen() -> None:
 
 def get_target_directory() -> str:
     '''Returns the directory the user wants to manipulate and confirms it with them.'''
-    print('\nEnter directory: ',end='')
-    current_directory = str(input())
-    print('Confirm directory: ',end='')
-    confirm_directory = str(input())
+    current_directory = str(input('\nEnter directory: '))
+    confirm_directory = str(input('Confirm directory: '))
     if (current_directory == confirm_directory):
         return current_directory
     else:
@@ -28,9 +26,8 @@ def get_sorting_method() -> SortingMethod:
     print()
     for method in SortingMethod:
         print(f'{method.value}. {method.name}')
-    print('\nSelect sorting method: ',end='')
 
-    return SortingMethod(int(input()))
+    return SortingMethod(int(input('\nSelect sorting method: ')))
 
 def handle_sort(target_directory: str, selected_sort: SortingMethod, file_type: str='*.*') -> list[str]: 
     '''Applies the selected SortingMethod to the selected file type in a directory.'''
@@ -69,8 +66,7 @@ def main():
 
     sorted_files = handle_sort(target_directory, selected_sort)
 
-    print('\nEnter name for all files: ', end='')
-    bulk_name = input()
+    bulk_name = input('\nEnter name for all files: ')
     renamed_files = rename_file_list(target_directory, sorted_files, bulk_name)
     apply_rename(sorted_files, renamed_files)
     print('Files renamed.')
