@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum, auto
 from os.path import getmtime, getsize, splitext
 import glob
@@ -9,6 +10,10 @@ class SortingMethod(Enum):
     CHRONOLOGICAL = auto()
     FILE_SIZE = auto()
 
+@dataclass
+class SortingOptions:
+    file_ext: str = '*.*'
+    
 def print_welcome_screen() -> None:
     print('Welcome to ren!')
 
@@ -30,15 +35,15 @@ def get_sorting_method() -> SortingMethod:
 
     return SortingMethod(int(input('\nSelect sorting method: ')))
 
-def handle_sort(target_directory: str, selected_sort: SortingMethod, file_type: str='*.*') -> list[str]: 
+def handle_sort(target_directory: str, method: SortingMethod, options: SortingOptions) -> list[str]: 
     '''Applies the selected SortingMethod to the selected file type in a directory.'''
-    file_list = glob.glob(target_directory + file_type)
+    file_list = glob.glob(target_directory + options.file_ext)
 
-    if selected_sort == SortingMethod.ALPHABETICAL:
+    if method == SortingMethod.ALPHABETICAL:
         return sorted(file_list)
-    elif selected_sort == SortingMethod.CHRONOLOGICAL:     
+    elif method == SortingMethod.CHRONOLOGICAL:     
         return sorted(file_list,key=getmtime)
-    elif selected_sort == SortingMethod.FILE_SIZE:
+    elif method == SortingMethod.FILE_SIZE:
         return sorted(file_list,key=getsize) # Returns largest last
 
 def rename_file_list(target_directory: str, sorted_files: list[str], bulk_name: str, add_date: bool) -> list[str]:
@@ -63,13 +68,23 @@ def apply_rename(original_files: list[str], renamed_files: list[str]) -> None:
         rename(original, renamed)
     return 
 
+def get_sorting_options() -> SortingOptions:
+    print('\nFor any file type, use .*')
+    ext = input('Enter file type: ')
+    ext = f'*{ext}'
+
+    options = SortingOptions(file_ext=ext)
+
+    return options
+
 def main():
     print_welcome_screen()
     
     target_directory = get_target_directory()
     selected_sort = get_sorting_method()
     add_date = bool(input('Use date (True / False): '))
-    sorted_files = handle_sort(target_directory, selected_sort)
+    sorting_options = get_sorting_options()
+    sorted_files = handle_sort(target_directory, selected_sort, sorting_options)
 
     bulk_name = input('\nEnter name for all files: ')
     renamed_files = rename_file_list(target_directory, sorted_files, bulk_name, add_date)
