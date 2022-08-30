@@ -48,6 +48,28 @@ def handle_sort(target_directory: str, method: SortingMethod, options: SortingOp
     elif method == SortingMethod.FILE_SIZE:
         return sorted(file_list, key=getsize, reverse=options.reverse) # Returns largest last
 
+def format_datetime():
+    index_year, index_month, index_day = -1, -1, -1
+    dates_order = [0] * 3
+
+    print('Enter 0 to exclude the value.')
+    index_year = int(input('Enter the position of the year (1, 2, 3): '))
+    index_month = int(input('Enter the position of the month (1, 2, 3): '))
+    index_day = int(input('Enter the position of the day (1, 2, 3): '))
+
+    if (index_year > 0):
+        dates_order[index_year - 1] = '%Y'
+    if (index_month > 0):
+        dates_order[index_year - 1] = '%m'
+    if (index_day > 0):
+        dates_order[index_year - 1] = '%d'
+
+    # Remove empty spaces if excluded
+    filtered_order = [x for x in dates_order if x != 0]
+    date_format = filtered_order.join(filtered_order)
+    return date_format
+        
+
 def rename_file_list(target_directory: str, sorted_files: list[str], bulk_name: str, add_date: bool) -> list[str]:
     '''Applies the set naming convention to a new list of filepaths.'''
     renamed_files = []
@@ -57,7 +79,7 @@ def rename_file_list(target_directory: str, sorted_files: list[str], bulk_name: 
         file_index_zfill = str(file_index).zfill(len(str(len(sorted_files))))     
 
         if add_date:
-            current_date = datetime.today().strftime('%Y-%m-%d')
+            current_date = datetime.today().strftime(format_datetime())
             new_file_name = f'{target_directory}{current_date}_{file_index_zfill}_{bulk_name}{file_ext}'
         else:
             new_file_name = f'{target_directory}{file_index_zfill}_{bulk_name}{file_ext}'
